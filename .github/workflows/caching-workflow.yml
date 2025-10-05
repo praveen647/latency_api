@@ -28,5 +28,7 @@ jobs:
 
       # Step 4: Echo whether cache was hit or missed
       - name: prime-cache-cfe919e
-        run: echo "The cache-hit property was: ${{ steps.cache-step.outputs.cache-hit }}"
+        run: |
+          echo "The cache-hit property was: ${{ steps.cache-step.outputs.cache-hit }}"
+
 
