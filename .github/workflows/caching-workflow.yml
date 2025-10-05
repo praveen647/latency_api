@@ -1,0 +1,33 @@
+name: CI with Caching
+
+on:
+  push:
+    branches: [ "main" ]
+  workflow_dispatch:
+
+jobs:
+  build-with-cache:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      # This step creates a dummy directory to cache.
+      # In a real project, this would be your node_modules, venv, etc.
+      - name: Create directory for caching
+        run: mkdir -p dummy_dependencies
+
+      # This is the main caching step.
+      - name: Cache dependencies
+        id: cache-step # We give it an ID to access its output later.
+        uses: actions/cache@v4
+        with:
+          # The folder we want to cache
+          path: dummy_dependencies
+          # The key for this cache
+          key: cache-cfe919e
+
+      # This is the required step that echoes the cache hit status.
+      # It uses the output from the step with id: cache-step
+      - name: prime-cache-cfe919e
+        run: echo "The cache-hit property was: ${{ steps.cache-step.outputs.cache-hit }}"
