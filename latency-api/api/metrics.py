@@ -20,29 +20,28 @@ with open(os.path.join(os.path.dirname(__file__), "../telemetry/sample_data.json
     data = json.load(f)
 
 df = pd.DataFrame(data)
-
 @app.post("/api/metrics")
 async def metrics(request: Request):
-    body = await request.json()
-    regions = body.get("regions", [])
-    threshold = body.get("threshold_ms", 180)
+    try:
+        body = await request.json()
+        regions = body.get("regions", [])
+        threshold = body.get("threshold_ms", 180)
 
-    result = {}
-    for region in regions:
-        region_df = df[df["region"] == region]
-        if region_df.empty:
-            continue
+        result = {}
+        for region in regions:
+            region_df = df[df["region"] == region]
+            if region_df.empty:
+                continue
 
-        avg_latency = region_df["latency_ms"].mean()
-        p95_latency = np.percentile(region_df["latency_ms"], 95)
-        avg_uptime = region_df["uptime"].mean()
-        breaches = (region_df["latency_ms"] > threshold).sum()
+            result[region] = {
+                "avg_latency": round(region_df["latency_ms"].mean(), 2),
+                "p95_latency": round(np.percentile(region_df["latency_ms"], 95), 2),
+                "avg_uptime": round(region_df["uptime"].mean(), 4),
+                "breaches": int((region_df["latency_ms"] > threshold).sum())
+            }
 
-        result[region] = {
-            "avg_latency": round(avg_latency, 2),
-            "p95_latency": round(p95_latency, 2),
-            "avg_uptime": round(avg_uptime, 4),
-            "breaches": int(breaches)
-        }
+        return result or {"message": "No data for given regions"}
 
-    return result
+    except Exception as e:
+        return {"error": str(e)}
+
