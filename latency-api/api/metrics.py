@@ -9,11 +9,13 @@ import pathlib
 app = FastAPI()
 
 # Enable CORS for POST requests from any origin
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
-    allow_methods=["POST"],
-    allow_headers=["*"],
+    allow_origins=["*"],            # Allow any origin
+    allow_credentials=True,
+    allow_methods=["*"],            # Allow all HTTP methods (important!)
+    allow_headers=["*"],            # Allow all headers
 )
 
 # Correct path resolution for Vercel
