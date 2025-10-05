@@ -1,0 +1,9 @@
+{
+  "version": 2,
+  "builds": [
+    { "src": "api/metrics.py", "use": "@vercel/python" }
+  ],
+  "routes": [
+    { "src": "/api/metrics", "dest": "/api/metrics.py" }
+  ]
+}
